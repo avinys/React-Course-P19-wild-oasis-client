@@ -6,6 +6,9 @@ export const metadata = {
 	title: "Cabins",
 };
 
+// revalidate every hour (optimal cosidering that the prices will not be updated that often)
+export const revalidate = 60 * 60;
+
 export default async function Page() {
 	return (
 		<div>
