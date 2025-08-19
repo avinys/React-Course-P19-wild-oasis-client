@@ -1,4 +1,4 @@
-import SideNavigation from "@/app/_components/SideNavigation";
+import SideNavigation from "@/app/account/SideNavigation";
 
 export default function AccountLayout({ children }) {
 	return (
