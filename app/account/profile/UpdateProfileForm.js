@@ -1,7 +1,5 @@
-"use client";
-
+import SubmitButton from "@/app/_components/SubmitButton";
 import { updateProfile } from "@/app/_lib/actions";
-import Button from "./Button";
 
 function UpdateProfileForm({ children, guest }) {
 	const { fullName, email, nationality, nationalID, countryFlag } = guest;
@@ -52,7 +50,7 @@ function UpdateProfileForm({ children, guest }) {
 			</div>
 
 			<div className="flex justify-end items-center gap-6">
-				<Button />
+				<SubmitButton label="Update profile" />
 			</div>
 		</form>
 	);
