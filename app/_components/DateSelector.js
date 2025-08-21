@@ -1,10 +1,18 @@
 "use client";
 
-import { isWithinInterval } from "date-fns";
-import { useState } from "react";
+import { useReservation } from "@/app/_components/ReservationContext";
+import {
+	differenceInCalendarDays,
+	differenceInDays,
+	isAfter,
+	isBefore,
+	isPast,
+	isSameDay,
+	isWithinInterval,
+	startOfDay,
+} from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { useReservation } from "@/app/_components/ReservationContext";
 
 function isAlreadyBooked(range, datesArr) {
 	return (
@@ -16,13 +24,38 @@ function isAlreadyBooked(range, datesArr) {
 	);
 }
 
+// helpers
+const isBooked = (d, bookedDates) => bookedDates.some((b) => isSameDay(b, d));
+
+const createsTooShortRange = (d, displayRange, minBookingLength) => {
+	if (!displayRange?.from || displayRange?.to) return false; // only constrain while picking the end date
+	const from = startOfDay(displayRange.from);
+	const end = startOfDay(d);
+	const length = differenceInCalendarDays(end, from); // inclusive
+	return length > 0 && length < minBookingLength;
+};
+
+const crossesABookedDay = (d, displayRange, bookedDates) => {
+	if (!displayRange?.from || displayRange?.to) return false;
+	const start = startOfDay(
+		isBefore(d, displayRange.from) ? d : displayRange.from
+	);
+	const end = startOfDay(
+		isAfter(d, displayRange.from) ? d : displayRange.from
+	);
+	return bookedDates.some((b) =>
+		isWithinInterval(startOfDay(b), { start, end })
+	);
+};
+
 function DateSelector({ cabin, bookedDates, settings }) {
 	const { range, setRange, resetRange } = useReservation();
-	// CHANGE
-	const regularPrice = 23;
-	const discount = 23;
-	const numNights = 23;
-	const cabinPrice = 23;
+
+	const displayRange = isAlreadyBooked(range, bookedDates) ? {} : range;
+
+	const { regularPrice, discount } = cabin;
+	const numNights = differenceInDays(displayRange.to, displayRange.from);
+	const cabinPrice = numNights * (regularPrice - discount);
 
 	// SETTINGS
 	const { minBookingLength, maxBookingLength } = settings;
@@ -36,10 +69,20 @@ function DateSelector({ cabin, bookedDates, settings }) {
 				max={maxBookingLength}
 				startMonth={new Date()}
 				end={new Date().getFullYear() + 5}
-				disabled={{ before: new Date() }}
+				disabled={(curDate) =>
+					isPast(curDate) ||
+					isBooked(curDate, bookedDates) ||
+					createsTooShortRange(
+						curDate,
+						displayRange,
+						minBookingLength
+					) ||
+					crossesABookedDay(curDate, displayRange, bookedDates)
+				}
+				iisP
 				captionLayout="dropdown"
 				onSelect={setRange}
-				selected={range}
+				selected={displayRange}
 				numberOfMonths={2}
 			/>
 
