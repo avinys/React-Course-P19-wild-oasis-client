@@ -35,6 +35,8 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## Useful information
+
 The website is deployed on https://react-course-p19-wild-oasis-client.vercel.app/
 
 Keep in mind that .env.local file is needed for this project to run on a local pc, necessary variables are: SUPABASE_URL, SUPABASE_KEY, NEXTAUTH_URL, NEXTAUTH_SECRET, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET.
